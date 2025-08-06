@@ -1,0 +1,28 @@
+system_metric:
+  enable: true
+  memory:
+    ingest_polling_interval: 0.5
+    run_query_benchmark_polling_interval: 0.1
+
+container_id: clp-package-bench
+hot_run_warm_up_times: 3
+related_processes: []
+measure_docker_memory: true
+container_prefixes:
+  - 'clp-webui'
+  - 'clp-reducer'
+  - 'clp-query_worker'
+  - 'clp-compression_worker'
+  - 'clp-query_scheduler'
+  - 'clp-compression_scheduler'
+  - 'clp-results_cache'
+  - 'clp-redis'
+  - 'clp-queue'
+  - 'clp-database'
+queries:
+  - '"attr.tickets:*"'
+  - '"id: 22419"'
+  - '"attr.message.msg: log_release* AND attr.message.session_name: connection"'
+  - '''ctx: initandlisten AND (NOT msg: "WiredTiger message" OR attr.message.msg: log_remove*)'''
+  - '"c: WTWRTLOG AND attr.message.ts_sec > 1679490000"'
+  - '"ctx: FlowControlRefresher AND attr.numTrimmed: 0"'

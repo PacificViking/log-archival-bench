@@ -39,6 +39,27 @@ def append_memory(self):
     #logger.info(f"Memory used: {metric_sample//(1024*1024)} MB")
     self.bench_info['memory'].append(metric_sample)
 
+def append_docker_memory(self):
+    metric_sample = 0
+    for jsonline in subprocess.check_output(["docker", "stats", "--no-stream", "--no-trunc", "--format", "json"]).decode().split('\n'):
+        if not jsonline.strip():
+            continue
+        line = json.loads(jsonline)
+        for prefix in self.config["container_prefixes"]:
+            if line["Name"].startswith(prefix):
+                memtxt = line["MemUsage"].split()[0]
+                if memtxt[:-1].isdigit():   # B
+                    metric_sample += int(memtxt[-1])
+                else:
+                    memunit = memtxt[-3]
+                    memnum = float(memtxt[:-3])
+                    memunitmult = {'K': 1024, 'M': 1024**2, 'G': 1024**3, 'T': 1024**4}[memunit]
+                    metric_sample += memnum * memunitmult
+                break
+    #logger.info(f"Memory used: {metric_sample//(1024*1024)} MB")
+    self.bench_info['memory'].append(metric_sample)
+
+
 def poll_memory(self, bench_uuid):
     while True:
         if self.bench_info['ingest'] is True:
@@ -48,7 +69,10 @@ def poll_memory(self, bench_uuid):
         time.sleep(interval - (time.time() % interval))  # wait for next "5 second interval"
 
         if self.bench_info['running'] == bench_uuid:
-            append_memory(self)
+            if "measure_docker_memory" in self.config and self.config["measure_docker_memory"] is True:
+                append_docker_memory(self)
+            else:
+                append_memory(self)
         else:
             break
 

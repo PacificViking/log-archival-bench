@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from assets.clp.main import clp_bench
+from assets.clp_package.main import clp_package_bench
 from assets.clickhouse.main import clickhouse_bench
 from assets.sparksql.main import sparksql_bench
 from assets.presto_parquet.main import parquet_bench
@@ -34,24 +35,25 @@ def get_target_from_name(name):
 
 
 benchmarks = [  # benchmark object, arguments
-        #(clp_bench, {}),
-        #(clickhouse_bench, {
-        #    'manual_column_names': False,
-        #    'keys': [],
-        #    'additional_order_by': [],
-        #    'timestamp_key': True
-        #    }),
-        #(presto_clp_bench, {
-        #    'dataset_variation': "cleaned_log"
-        #    }),
-        #(parquet_bench, {'mode': 'json string'}),
-        #(parquet_bench, {'mode': 'pairwise arrays'}),
+        (clp_bench, {}),
+        (clp_package_bench, {}),
+        (clickhouse_bench, {
+            'manual_column_names': False,
+            'keys': [],
+            'additional_order_by': [],
+            'timestamp_key': True
+            }),
+        (presto_clp_bench, {
+            'dataset_variation': "cleaned_log"
+            }),
+        (parquet_bench, {'mode': 'json string'}),
+        (parquet_bench, {'mode': 'pairwise arrays'}),
         (elasticsearch_bench, {'logsdb': False}),
         (elasticsearch_bench, {'logsdb': True}),
-        #(overhead_test_bench, {}),
-        #(zstandard_bench, {}),
-        #(sparksql_bench, {}),
-        #(gzip_bench, {}),
+        (overhead_test_bench, {}),
+        (zstandard_bench, {}),
+        (sparksql_bench, {}),
+        (gzip_bench, {}),
     ]
 
 def run(bencher, kwargs, bench_target, attach=False, attach_on_error=False):
@@ -86,8 +88,8 @@ for bencher, kwargs in benchmarks:
         if len(sys.argv) > 1:
             if dataset_name != sys.argv[1].strip():
                 continue
-        run(bencher, kwargs, bench_target)
-        #run(bencher, kwargs, bench_target, attach_on_error=True)
+        #run(bencher, kwargs, bench_target)
+        run(bencher, kwargs, bench_target, attach_on_error=True)
         #run(bencher, kwargs, bench_target, attach=True)
 
 #run(sparksql_bench, {}, get_target_from_name('mongod'))

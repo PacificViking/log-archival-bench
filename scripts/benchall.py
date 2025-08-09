@@ -61,7 +61,6 @@ def run(bencher, kwargs, bench_target, attach=False, attach_on_error=False):
     bench = None
     try:
         dataset_name = os.path.basename(bench_target.resolve()).strip()
-        # benchmark clp_presto on the cleaned (no spaces) datasets
 
         print(f'Benchmarking {bencher.__name__} ({kwargs}) on dataset {dataset_name}')
 
@@ -81,13 +80,14 @@ def run(bencher, kwargs, bench_target, attach=False, attach_on_error=False):
         else:
             pass
 
-for bencher, kwargs in benchmarks:
-    for bench_target in bench_target_dirs:
-        dataset_name = os.path.basename(bench_target.resolve()).strip()
-        
-        if len(sys.argv) > 1:
-            if dataset_name != sys.argv[1].strip():
-                continue
+for bench_target in bench_target_dirs:
+    dataset_name = os.path.basename(bench_target.resolve()).strip()
+    
+    if len(sys.argv) > 1:
+        if dataset_name != sys.argv[1].strip():
+            continue
+
+    for bencher, kwargs in benchmarks:
         #run(bencher, kwargs, bench_target)
         run(bencher, kwargs, bench_target, attach_on_error=True)
         #run(bencher, kwargs, bench_target, attach=True)
